@@ -11252,10 +11252,14 @@ require("./app2.css");
 
 var _jquery = _interopRequireDefault(require("jquery"));
 
+var _localStorage$getItem;
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var $tabBar = (0, _jquery.default)("#app2 .tab-bar");
-var $tabContent = (0, _jquery.default)("#app2 .tab-content"); // 1. jq 提供的事件委托写法如下：监听 tabBar 下的所以 li 的 click 事件
+var $tabContent = (0, _jquery.default)("#app2 .tab-content");
+var localKey = "app2.index";
+var index = (_localStorage$getItem = localStorage.getItem(localKey)) !== null && _localStorage$getItem !== void 0 ? _localStorage$getItem : 0; // 1. jq 提供的事件委托写法如下：监听 tabBar 下的所以 li 的 click 事件
 // 2. 如何确定一个元素在所有同级元素中的位置：遍历。jq 内置遍历下标 index()
 
 $tabBar.on("click", "li", function (e) {
@@ -11263,13 +11267,16 @@ $tabBar.on("click", "li", function (e) {
   // console.log(e.currentTarget)  // 只获取 li // 具体用哪一个，可以试一下
   var $li = (0, _jquery.default)(e.currentTarget);
   $li.addClass("selected").siblings().removeClass("selected");
-  var index = $li.index();
-  console.log(index); // 0 或 1
+  var index = $li.index(); // 获取当前激活的tab的下标
 
-  $tabContent.children().eq(index).addClass("active").siblings().removeClass("active");
-}); // 设置默认情况下，展示第一个 li（也可以在 html 中直接添加上激活的类名来展示默认li）
+  localStorage.setItem(localKey, index); // 存储到 ls
+  // console.log(index)  // 0 或 1
 
-$tabBar.children().eq(0).trigger("click");
+  $tabContent.children().eq(index).addClass("active") // 匹配展示内容与tabBar标题
+  .siblings().removeClass("active");
+}); // 设置默认情况下，激活第 index 个 li （也可以在 html 中直接添加上激活的类名来展示默认li）
+
+$tabBar.children().eq(index).trigger("click");
 },{"./app2.css":"AQoi","jquery":"juYr"}],"y8lT":[function(require,module,exports) {
 "use strict";
 
@@ -11280,9 +11287,29 @@ var _jquery = _interopRequireDefault(require("jquery"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var $square = (0, _jquery.default)("#app3 .square");
+var localKey = "app3.active";
+/* 可能有三个值，yes、no、默认undefined */
+
+var active = localStorage.getItem(localKey) === "yes"; // 现在根据active变量，为true 就添加类名，为false，就不添加类名
+
+/*if (active) {
+  $square.addClass("active")
+} else {
+  $square.removeClass("active")
+}*/
+// 上面代码块可以用 toggleClass 简写
+
+$square.toggleClass("active", active); // 表示 active 变量为 true，则添加“active”类名，false 则不添加
+
 $square.on("click", function () {
-  /* toggle（切换）有则删除、无则添加 */
-  $square.toggleClass("active");
+  // $square.toggleClass("active") // toggle（切换）有则删除、无则添加
+  if ($square.hasClass("active")) {
+    localStorage.setItem("app3.active", "no");
+    $square.removeClass("active");
+  } else {
+    $square.addClass("active");
+    localStorage.setItem("app3.active", "yes");
+  }
 });
 },{"./app3.css":"AQoi","jquery":"juYr"}],"eWpN":[function(require,module,exports) {
 "use strict";
@@ -11314,4 +11341,4 @@ require("./app3.js");
 
 require("./app4.js");
 },{"./reset.css":"AQoi","./global.css":"AQoi","./app1.js":"US5u","./app2.js":"vZ5o","./app3.js":"y8lT","./app4.js":"eWpN"}]},{},["epB2"], null)
-//# sourceMappingURL=main.ada74431.js.map
+//# sourceMappingURL=main.e918f69a.js.map
